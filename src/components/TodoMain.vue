@@ -39,15 +39,15 @@
 </template>
 
 <script>
-// import {db} from '../firebase/db';
+import {db} from '../firebase/db';
 
 export default {
     data() {
         return {
             todos:[
-                {text: '공부하기', state: 'yet'},
-                {text: '운동하기', state: 'done'},
-                {text: '글쓰기', state: 'done'},
+                // {text: '공부하기', state: 'yet'},
+                // {text: '운동하기', state: 'done'},
+                // {text: '글쓰기', state: 'done'},
             ],
             addItemText: '',
             crrEditItem: '',
@@ -63,7 +63,17 @@ export default {
     methods: {
         addItem() {
             if(this.addItemText.length === 0) return;
-            this.todos.push({text: this.addItemText, state: 'yet'});
+            // this.todos.push({text: this.addItemText, state: 'yet'});
+            // 서버가 아닌 firebase database에 필드 추가
+            db.collection('todos').add({
+                text: this.addItemText,
+                state: 'yet'
+            }).then(sn => {
+                // 생성된 요소에 id값 추가
+                db.collection('todos').doc(sn.id).update({
+                    id: sn.id
+                });
+            });
             this.addItemText = '';
         },
         
@@ -84,23 +94,38 @@ export default {
         },
 
         editSave() {
-            this.todos[this.crrEditItem].text = this.editItemText;
+            // this.todos[this.crrEditItem].text = this.editItemText;
+            db.collection('todos')
+                .doc(this.todos[this.crrEditItem].id)
+                    .update({
+                        text: this.editItemText
+                    })
+
             this.writeState = 'add';
             this.$refs.list.children[this.crrEditItem].className = '';
         },
 
         del(index) {
-            this.todos.splice(index, 1);
+            // this.todos.splice(index, 1);
+            // 요소가 가진 id로 지워야 할 데이터를 db에서 찾고 삭제
+            db.collection('todos').doc(this.todos[index].id).delete();
         }
     },
 
     mounted() {
         this.$refs.writeArea.focus();
+
+        db.collection('todos').get().then((result) => {
+            result.forEach((doc)=>{
+                // console.log(doc.data())
+                this.todos.push(doc.data());
+            })
+        });
     },
 
-    // firestore: {
-    //     todos: db.collection('todos')
-    // }
+    firestore: {
+        todos: db.collection('todos')
+    }
 }
 </script>
 
