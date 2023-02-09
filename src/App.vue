@@ -33,7 +33,7 @@ input, button, a {outline: none;}
 .btn.point {background-color: #2CA661; border:none; color:white}
 
 /* header */
-h1 {font-family: 'Merriweather', serif;}
+h1 {font-family: 'Merriweather Sans', sans-serif; font-weight: 600;}
 
 /* page */
 .page {max-width: 1000; margin:40px auto; width:80%}
