@@ -48,7 +48,9 @@ export default {
 
     methods: {
         addItem() {
+            if(this.addItemText.length === 0) return;
             this.todos.push({text: this.addItemText, state: 'yet'});
+            this.addItemText = '';
         }
     }
 }
