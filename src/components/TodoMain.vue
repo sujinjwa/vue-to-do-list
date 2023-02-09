@@ -5,18 +5,20 @@
         </header>
         <main>
             <div class="todos">
-                <!-- 등록할 때의 input -->
-                <div class="write" v-if="writeState === 'add'">
-                    <input type="text" v-model="addItemText" @keyup.enter="addItem" ref="writeArea" />
-                    <button class="btn add" @click="addItem">Add</button>
-                </div>
-                <!-- 수정할 때의 input -->
-                <div class="write" v-else>
-                    <input type="text" v-model="editItemText" @keyup.enter="editSave" ref="writeArea" />
-                    <button class="btn add" @click="editSave">Save</button>
-                </div>
-                <ul>
-                    <li v-for="(item, index) in todos" class="list" :key="index">
+                <transition name="fade">
+                    <!-- 등록할 때의 input -->
+                    <div class="write" v-if="writeState === 'add'" key="add">
+                        <input type="text" v-model="addItemText" @keyup.enter="addItem" ref="writeArea" />
+                        <button class="btn add" @click="addItem">Add</button>
+                    </div>
+                    <!-- 수정할 때의 input -->
+                    <div class="write edit" v-else key="edit">
+                        <input type="text" v-model="editItemText" @keyup.enter="editSave" ref="writeArea" />
+                        <button class="btn add" @click="editSave">Save</button>
+                    </div>
+                </transition>
+                <ul class="list" ref="list">
+                    <li v-for="(item, index) in todos" :key="index">
                         <i 
                             @click="checkItem(index)"
                             :class="[item.state === 'yet' ? 'far' : 'fas', 'fa-check-square']">
@@ -37,6 +39,8 @@
 </template>
 
 <script>
+// import {db} from '../firebase/db';
+
 export default {
     data() {
         return {
@@ -76,11 +80,13 @@ export default {
             // this.crrEditItem = this.todos[index].text;
             this.crrEditItem = index;
             this.editItemText = this.todos[this.crrEditItem].text;
+            this.$refs.list.children[index].classList.add('editing');
         },
 
         editSave() {
             this.todos[this.crrEditItem].text = this.editItemText;
             this.writeState = 'add';
+            this.$refs.list.children[this.crrEditItem].className = '';
         },
 
         del(index) {
@@ -90,7 +96,11 @@ export default {
 
     mounted() {
         this.$refs.writeArea.focus();
-    }
+    },
+
+    // firestore: {
+    //     todos: db.collection('todos')
+    // }
 }
 </script>
 
