@@ -26,7 +26,7 @@
                             {{ item.text }}
                             <b>
                                 <a href="" @click.prevent="editShow(index)">Edit</a>
-                                <a href="">Del</a>
+                                <a href="" @click.prevent="del(index)">Del</a>
                             </b>
                         </span>
                     </li>
@@ -81,6 +81,10 @@ export default {
         editSave() {
             this.todos[this.crrEditItem].text = this.editItemText;
             this.writeState = 'add';
+        },
+
+        del(index) {
+            this.todos.splice(index, 1);
         }
     },
 
